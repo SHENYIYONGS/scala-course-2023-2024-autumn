@@ -24,4 +24,4 @@ lazy val commonSettings = Seq(
         "-source", "11",
         "-target", "11"
     ),
-)
+)compile
