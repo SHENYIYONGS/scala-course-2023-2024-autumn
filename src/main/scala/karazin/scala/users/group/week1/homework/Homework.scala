@@ -42,26 +42,68 @@ object Homework :
 
     val int = 42
 
-    def not(b: Boolean): Boolean = ??? // here is my greatest solution
+    def not(b: Boolean): Boolean ={
+      if (b) false else true
+    }
 
-    def and(left: Boolean, right: Boolean): Boolean = ???
+    // here is my greatest solution
 
-    def or(left: Boolean, right: Boolean): Boolean = ???
+    def and(left: Boolean, right: Boolean): Boolean =  {
+      if (left) right else false
+    }
+
+
+
+    def or(left: Boolean, right: Boolean): Boolean = {
+      if (left) true else right
+    }
+
+
 
   end `Boolean Operators`
 
   object `Fermat Numbers` :
 
-    val multiplication: (BigInt, BigInt) => BigInt = ???
+    val multiplication: (BigInt, BigInt) => BigInt = (a, b) => {
+      if (a == 0 || b == 0) 0
+      else a + multiplication(a, b - 1)
+    }
 
-    val power: (BigInt, BigInt) => BigInt = ???
 
-    val fermatNumber: Int => BigInt = ???
+
+    val power: (BigInt, BigInt) => BigInt =  (base, exp) => {
+      if (exp == 0) 1
+      else base * power(base, exp - 1)
+    }
+
+
+
+    val fermatNumber: Int => BigInt =  n => {
+      if (n == 0) 0
+      else power(2, power(2, n - 1)) + 1
+    }
+
+
 
   end `Fermat Numbers`
 
   object `Look-and-say Sequence` :
-    val lookAndSaySequenceElement: Int => BigInt = ???
+    val lookAndSaySequenceElement: Int => BigInt = n => {
+      def generateNext(s: String, count: Int, acc: String): String = {
+        if (s.isEmpty) acc + count + s.head
+        else if (s.head == acc.last) generateNext(s.tail, count + 1, acc)
+        else generateNext(s.tail, 1, acc + count + s.head)
+      }
+
+      def lookAndSayHelper(current: String, iterations: Int): String = {
+        if (iterations == 0) current
+        else lookAndSayHelper(generateNext(current, 1, ""), iterations - 1)
+      }
+
+      BigInt(lookAndSayHelper("1", n))
+    }
+
+
 
   end `Look-and-say Sequence`
 
