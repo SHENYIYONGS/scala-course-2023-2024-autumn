@@ -35,23 +35,23 @@ object Homework:
 
     infix def contains(x: Int): Boolean = false
 
-    infix def remove(x: Int): IntSet = ???
+    infix def remove(x: Int): IntSet =  this
     
     @targetName("union")
-    infix def ∪(that: IntSet): IntSet = ???
+    infix def ∪(that: IntSet): IntSet = that
 
     @targetName("intersection")
-    infix def ∩(that: IntSet): IntSet = ???
+    infix def ∩(that: IntSet): IntSet = this
 
     @targetName("complement")
-    infix def ∖(that: IntSet): IntSet = ???
+    infix def ∖(that: IntSet): IntSet = this
 
     @targetName("disjunctive union")
-    infix def ∆(that: IntSet): IntSet = ???
+    infix def ∆(that: IntSet): IntSet = that
     
     override def toString: String = "[*]"    
     
-    override def equals(other: Any): Boolean = ???    
+    override def equals(other: Any): Boolean = other.isInstanceOf[Empty.type]
 
   end Empty
     
@@ -68,23 +68,44 @@ object Homework:
       else              true
 
     // Optional task
-    infix def remove(x: Int): IntSet = ???
+    infix def remove(x: Int): IntSet =
+      if (x < elem) NonEmpty(elem, left remove x, right)
+      else if (x > elem) NonEmpty(elem, left, right remove x)
+      else left ∪ right
+
 
     @targetName("union")
-    infix def ∪(that: IntSet): IntSet = ???
+    infix def ∪(that: IntSet): IntSet =
+      ((left ∪ that) ∪ right) include elem
+
+
 
     @targetName("intersection")
-    infix def ∩(that: IntSet): IntSet = ???
+    infix def ∩(that: IntSet): IntSet =
+      ((left ∩ that) ∩ right) include elem
+
+
 
     @targetName("complement")
-    infix def ∖(that: IntSet): IntSet = ???
+    infix def ∖(that: IntSet): IntSet =
+      (left ∖ that) ∪ (right ∖ that)
+
+
 
     @targetName("disjunctive union")
-    infix def ∆(that: IntSet): IntSet = ???
-    
+    infix def ∆(that: IntSet): IntSet =
+      ((left ∆ that) ∪ (right ∆ that)) include elem
+
+
+
     override def toString: String = s"[$left - [$elem] - $right]"    
     
-    override def equals(other: Any): Boolean = ???
+    override def equals(other: Any): Boolean =
+      other match {
+        case NonEmpty(e, l, r) => elem == e && left == l && right == r
+        case _ => false
+      }
+
 
   end NonEmpty
 
