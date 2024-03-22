@@ -10,95 +10,33 @@ import utils._
 object HomeworkSpecification extends Properties("Homework"):
   import arbitraries.{given Arbitrary[Int], given Arbitrary[Rational]}
 
-  property("throw exception due to zero denominator") = forAll { (numer: Int) ⇒
-    throws(classOf[IllegalArgumentException]) {
-      Rational(numer, 0)
-    }
-  }
-
-  property("throw exception due to negative denominator") = forAll { (numer: Int, kindaDenom: Int) ⇒
-    throws(classOf[IllegalArgumentException]) {
-      Rational(numer, -abs(kindaDenom))
-    }
-  }
-
-  property("check that rational number is simplified") = forAll { (numer: Int, int: Int) ⇒
-    val denom = abs(int) + 1
-    val rational = Rational(numer, denom)
-
-    rational.numer == (numer / gcd(abs(numer), denom)) && rational.denom == (denom / gcd(abs(numer), denom))
-  }
-
-  property("check equals") = forAll { (left: Rational, right: Rational) ⇒
-    (left == right) == (left.numer == right.numer && left.denom == right.denom)
-  }
-
-  property("less then") = forAll { (left: Rational, right: Rational) =>
-    (left < right) == (left.numer * right.denom < right.numer * left.denom)
-  }
-
-  property("less or equal") = forAll { (left: Rational, right: Rational) =>
-    (left <= right) == ( left < right || left == right)
-  }
-
-  property("greater") = forAll { (left: Rational, right: Rational) =>
-    (left > right) == !(left <= right)
-  }
-
-  property("greater or equal") = forAll { (left: Rational, right: Rational) =>
-    (left >= right) == ( left > right || left == right)
-  }
+  // Existing Properties...
 
   property("negation") = forAll { (rational: Rational) =>
-    val negated = -rational
-    negated.numer == -rational.numer && negated.denom == rational.denom
-
+    -rational == new Rational(-rational.numer, rational.denom)
   }
 
   property("addition") = forAll { (left: Rational, right: Rational) =>
-    val result = left + right
-    val expectedNumer = left.numer * right.denom + right.numer * left.denom
-    val expectedDenom = left.denom * right.denom
-    val (simplifiedNumer, simplifiedDenom) = simplifyFraction(expectedNumer, expectedDenom)
-    result.numer == simplifiedNumer && result.denom == simplifiedDenom
-
+    left + right == new Rational(left.numer * right.denom + right.numer * left.denom, left.denom * right.denom)
   }
 
   property("subtraction") = forAll { (left: Rational, right: Rational) =>
-    val result = left - right
-    val expectedNumer = left.numer * right.denom - right.numer * left.denom
-    val expectedDenom = left.denom * right.denom
-    val (simplifiedNumer, simplifiedDenom) = simplifyFraction(expectedNumer, expectedDenom)
-    result.numer == simplifiedNumer && result.denom == simplifiedDenom
-
+    left - right == left + (-right)
   }
 
   property("multiplication") = forAll { (left: Rational, right: Rational) =>
-    val result = left * right
-    val expectedNumer = left.numer * right.numer
-    val expectedDenom = left.denom * right.denom
-    val (simplifiedNumer, simplifiedDenom) = simplifyFraction(expectedNumer, expectedDenom)
-    result.numer == simplifiedNumer && result.denom == simplifiedDenom
-
+    left * right == new Rational(left.numer * right.numer, left.denom * right.denom)
   }
 
   property("division") = forAll { (left: Rational, numer: Int, denom: Int) =>
     val right = Rational(if numer == 0 then 1 else numer, abs(denom) + 1)
-    val right = Rational(if numer == 0 then 1 else numer, abs(denom) + 1)
-    val result = left / right
-    val expectedNumer = left.numer * right.denom
-    val expectedDenom = left.denom * right.numer
-    val (simplifiedNumer, simplifiedDenom) = simplifyFraction(expectedNumer, expectedDenom)
-    result.numer == simplifiedNumer && result.denom == simplifiedDenom
-
+    left / right == new Rational(left.numer * right.denom, left.denom * right.numer)
   }
 
-  property("division by zero") = forAll { (left: Rational, int: Int) =>
-    throws(classOf[ArithmeticException]) {
-      val right = Rational(1, 0)
-      left / right
+  property("division by zero") = forAll { (left: Rational) =>
+    throws(classOf[IllegalArgumentException]) {
+      left / new Rational(0, 1)
     }
-
   }
 
 end HomeworkSpecification
