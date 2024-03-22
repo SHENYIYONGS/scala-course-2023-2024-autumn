@@ -36,32 +36,48 @@ import scala.annotation.tailrec
  * For more details @see https://en.wikipedia.org/wiki/Kolakoski_sequence
  */
 
-object Homework :
+object Homework:
 
-  object `Boolean Operators` :
+  object `Boolean Operators`:
 
-    val int = 42
+    def not(b: Boolean): Boolean = if (b) false else true
 
-    def not(b: Boolean): Boolean = ??? // here is my greatest solution
+    def and(left: Boolean, right: Boolean): Boolean = if (left) right else false
 
-    def and(left: Boolean, right: Boolean): Boolean = ???
-
-    def or(left: Boolean, right: Boolean): Boolean = ???
+    def or(left: Boolean, right: Boolean): Boolean = if (left) true else right
 
   end `Boolean Operators`
 
-  object `Fermat Numbers` :
+  object `Fermat Numbers`:
 
-    val multiplication: (BigInt, BigInt) => BigInt = ???
+    @tailrec
+    def addition(a: BigInt, b: BigInt, acc: BigInt = 0): BigInt =
+      if (b == 0) acc else addition(a, b - 1, acc + a)
 
-    val power: (BigInt, BigInt) => BigInt = ???
+    @tailrec
+    def power(base: BigInt, exp: BigInt, acc: BigInt = 1): BigInt =
+      if (exp == 0) acc else power(base, exp - 1, addition(acc, base))
 
-    val fermatNumber: Int => BigInt = ???
+    def fermatNumber(n: Int): BigInt = power(BigInt(2), BigInt(2).pow(n)) + 1
 
   end `Fermat Numbers`
 
-  object `Look-and-say Sequence` :
-    val lookAndSaySequenceElement: Int => BigInt = ???
+  object `Look-and-say Sequence`:
+
+    def lookAndSaySequenceElement(n: Int): BigInt = {
+      @tailrec
+      def nextElement(current: String, count: Int = n): String =
+        if (count == 0) current
+        else {
+          val next = current.foldRight(List.empty[(Char, Int)]) {
+            case (char, (lastChar, lastCount) :: tail) if char == lastChar => (char, lastCount + 1) :: tail
+            case (char, acc) => (char, 1) :: acc
+          }.map { case (char, count) => s"$count$char" }.mkString("")
+          nextElement(next, count - 1)
+        }
+
+      if (n <= 0) 1 else BigInt(nextElement("1"))
+    }
 
   end `Look-and-say Sequence`
 
