@@ -36,74 +36,48 @@ import scala.annotation.tailrec
  * For more details @see https://en.wikipedia.org/wiki/Kolakoski_sequence
  */
 
-object Homework :
+object Homework:
 
-  object `Boolean Operators` :
+  object `Boolean Operators`:
 
-    val int = 42
+    def not(b: Boolean): Boolean = if (b) false else true
 
-    def not(b: Boolean): Boolean ={
-      if (b) false else true
-    }
+    def and(left: Boolean, right: Boolean): Boolean = if (left) right else false
 
-    // here is my greatest solution
-
-    def and(left: Boolean, right: Boolean): Boolean =  {
-      if (left) right else false
-    }
-
-
-
-    def or(left: Boolean, right: Boolean): Boolean = {
-      if (left) true else right
-    }
-
-
+    def or(left: Boolean, right: Boolean): Boolean = if (left) true else right
 
   end `Boolean Operators`
 
-  object `Fermat Numbers` :
+  object `Fermat Numbers`:
 
-    val multiplication: (BigInt, BigInt) => BigInt = (a, b) => {
-      if (a == 0 || b == 0) 0
-      else a + multiplication(a, b - 1)
-    }
+    @tailrec
+    def addition(a: BigInt, b: BigInt, acc: BigInt = 0): BigInt =
+      if (b == 0) acc else addition(a, b - 1, acc + a)
 
+    @tailrec
+    def power(base: BigInt, exp: BigInt, acc: BigInt = 1): BigInt =
+      if (exp == 0) acc else power(base, exp - 1, addition(acc, base))
 
-
-    val power: (BigInt, BigInt) => BigInt =  (base, exp) => {
-      if (exp == 0) 1
-      else base * power(base, exp - 1)
-    }
-
-
-
-    val fermatNumber: Int => BigInt =  n => {
-      if (n == 0) 0
-      else power(2, power(2, n - 1)) + 1
-    }
-
-
+    def fermatNumber(n: Int): BigInt = power(BigInt(2), BigInt(2).pow(n)) + 1
 
   end `Fermat Numbers`
 
-  object `Look-and-say Sequence` :
-    val lookAndSaySequenceElement: Int => BigInt = n => {
-      def generateNext(s: String, count: Int, acc: String): String = {
-        if (s.isEmpty) acc + count + s.head
-        else if (s.head == acc.last) generateNext(s.tail, count + 1, acc)
-        else generateNext(s.tail, 1, acc + count + s.head)
-      }
+  object `Look-and-say Sequence`:
 
-      def lookAndSayHelper(current: String, iterations: Int): String = {
-        if (iterations == 0) current
-        else lookAndSayHelper(generateNext(current, 1, ""), iterations - 1)
-      }
+    def lookAndSaySequenceElement(n: Int): BigInt = {
+      @tailrec
+      def nextElement(current: String, count: Int = n): String =
+        if (count == 0) current
+        else {
+          val next = current.foldRight(List.empty[(Char, Int)]) {
+            case (char, (lastChar, lastCount) :: tail) if char == lastChar => (char, lastCount + 1) :: tail
+            case (char, acc) => (char, 1) :: acc
+          }.map { case (char, count) => s"$count$char" }.mkString("")
+          nextElement(next, count - 1)
+        }
 
-      BigInt(lookAndSayHelper("1", n))
+      if (n <= 0) 1 else BigInt(nextElement("1"))
     }
-
-
 
   end `Look-and-say Sequence`
 
